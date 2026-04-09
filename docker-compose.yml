@@ -1,0 +1,45 @@
+services:
+  app:
+    image: orangehrm/orangehrm:latest
+    container_name: orangehrm
+    restart: unless-stopped
+    ports:
+      - "${PORT:-80}:80"
+    environment:
+      - ORANGEHRM_DATABASE_HOST=${{ORANGEHRM_DATABASE_HOST}}
+      - ORANGEHRM_DATABASE_PORT=${{ORANGEHRM_DATABASE_PORT}}
+      - ORANGEHRM_DATABASE_NAME=${{ORANGEHRM_DATABASE_NAME}}
+      - ORANGEHRM_DATABASE_USER=${{ORANGEHRM_DATABASE_USER}}
+      - ORANGEHRM_DATABASE_PASSWORD=${{ORANGEHRM_DATABASE_PASSWORD}}
+      - ORANGEHRM_ADMIN_USERNAME=${{ORANGEHRM_ADMIN_USERNAME}}
+      - ORANGEHRM_ADMIN_PASSWORD=${{ORANGEHRM_ADMIN_PASSWORD}}
+      - ORANGEHRM_SMTP_HOST=${{ORANGEHRM_SMTP_HOST}}
+      - ORANGEHRM_SMTP_PORT=${{ORANGEHRM_SMTP_PORT}}
+      - ORANGEHRM_SMTP_AUTH_TYPE=${{ORANGEHRM_SMTP_AUTH_TYPE}}
+      - ORANGEHRM_SMTP_USERNAME=${{ORANGEHRM_SMTP_USERNAME}}
+      - ORANGEHRM_SMTP_PASSWORD=${{ORANGEHRM_SMTP_PASSWORD}}
+    volumes:
+      - app_data:/data
+    networks:
+      - internal
+
+  mariadb:
+    image: mariadb:10.11
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${ORANGEHRM_DATABASE_PASSWORD}
+      MYSQL_DATABASE: ${ORANGEHRM_DATABASE_NAME}
+      MYSQL_USER: ${ORANGEHRM_DATABASE_USER}
+      MYSQL_PASSWORD: ${ORANGEHRM_DATABASE_PASSWORD}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - internal
+
+volumes:
+  mariadb_data:
+volumes:
+  app_data:
+
+networks:
+  internal:
